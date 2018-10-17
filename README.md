@@ -26,5 +26,5 @@ python3 write_weeks_tasks.py
 A new file weeks_tasks.txt will appear in the project folder.  
 Note: Dated tasks will be printed last for each day.  
 
-A small note if you choose download Zip and use notepad as your text editor:  
+###### A small note if you choose download Zip and use notepad as your text editor:  
 GitHub runs git archive on a linux machine that will default to linux line endings. Notepad doesn't know how to handle linux line endings, so all the example text will be on the same line. You may want to use a different text editor(or create new lines for the day names and tasks).
