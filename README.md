@@ -11,7 +11,7 @@ Windows only. Only tested on windows 7.
 Requires Python 3 to be installed. Only tested with Python 3.5.3
 
 ## Installing: 
-Copy/Clone repository to harddrive.
+Clone/download repository to harddrive.
 
 ## Usage:
 ##### Add tasks to files:
