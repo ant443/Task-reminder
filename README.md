@@ -1,7 +1,7 @@
 # Project: task-reminder
 
 ## Description
-A Python script that reads tasks from two files, one containing tasks by weekday, the other containing tasks by date. When run, it prints your weeks tasks to a new file and updates dated task's date based on the frequency you gave the task.
+A Python3 script that reads tasks from two files, one containing tasks by weekday, the other containing tasks by date. When run, it prints your weeks tasks to a new file and updates dated task's date based on the frequency you gave the task.
 
 ## Motivation
 This saves me from having to remember tasks I need to do regularly.
