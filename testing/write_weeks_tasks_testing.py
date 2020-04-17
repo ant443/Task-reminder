@@ -12,9 +12,9 @@ Created on Tue Sep  4 13:05:35 2018
 import datetime
 
 
-weekday_tasks_location = "test_files/tasks_by_weekday.txt"
-dated_tasks_location = "test_files/tasks_by_date.txt"
-output_location = "test_files/output_test.txt"
+weekday_tasks_location = "testing_files/tasks_by_weekday.txt"
+dated_tasks_location = "testing_files/tasks_by_date.txt"
+output_location = "testing_files/output_test.txt"
 # ============================================================================
 
 def read_data(location):        
