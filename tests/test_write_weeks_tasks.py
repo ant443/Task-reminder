@@ -17,10 +17,44 @@ class WriteWeeksTasksTest(unittest.TestCase):
                 with self.assertRaises(error):
                     reminder.get_file_data("filename")
 
-    def test_get_file_data_expected_output(self):
+    def test_get_file_data__expected_output(self):
         mocked_data = "multi\nline\n\ndata\n"
         mocked_open = mock_open(read_data=mocked_data)
         with patch("builtins.open", mocked_open):
             result = reminder.get_file_data("filename")
         expected = ['multi\n', 'line\n', '\n', 'data\n']
         self.assertEqual(result, expected)
+
+    def test_halt_on_missing_or_duplicate_days__missing(self):
+        weekly_tasks = ["Monday", "skiing", "Sunday", "snooker", "bins out"]
+        with self.assertRaises(ValueError):
+            reminder.halt_on_missing_or_duplicate_days(weekly_tasks, reminder.DAYNAMES)
+
+    def test_halt_on_missing_or_duplicate_days__duplicate(self):
+        weekly_tasks = [
+            "Monday", "skiing", "Tuesday", "Sunday", "Wednesday", "Thursday", 
+            "Friday", "Saturday", "Sunday", "snooker", "bins out"
+            ]
+        with self.assertRaises(ValueError):
+            reminder.halt_on_missing_or_duplicate_days(weekly_tasks, reminder.DAYNAMES)
+
+    def test_halt_on_missing_or_duplicate_days__duplicate_but_correct_num_of(self):
+        weekly_tasks = [
+            "Tuesday", "Sunday", "Wednesday", "Thursday", 
+            "Friday", "Saturday", "Sunday", "snooker", "bins out"
+            ]
+        with self.assertRaises(ValueError):
+            reminder.halt_on_missing_or_duplicate_days(weekly_tasks, reminder.DAYNAMES)
+
+    def test_convert_to_dictionary__returns_expected_with_text_before_first_day(self):
+        weekly_tasks = [
+            "some text", "Monday", "skiing", "Tuesday", "Sunday", "Wednesday", "Thursday", 
+            "Friday", "Saturday", "Sunday", "snooker", "bins out"
+            ]
+        expected = {
+            'Monday': 'skiing\n', 'Tuesday': '', 'Wednesday': '',
+            'Thursday': '', 'Friday': '', 'Saturday': '',
+            'Sunday': 'snooker\nbins out\n'}
+        result = reminder.convert_to_dictionary(weekly_tasks, reminder.DAYNAMES)
+        self.assertEqual(expected, result)
+

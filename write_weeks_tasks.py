@@ -16,27 +16,35 @@ def strip_line_endings(data: list) -> list:
     """Removes line endings(\n). Removes items only containing \n."""
     return [i.rstrip("\n") for i in data if i != "\n"]
 
-def convert_to_dict(weekday_tasks_list):
-    weekdays = {"Monday": "", "Tuesday": "", "Wednesday": "", 
-            "Thursday": "", "Friday": "", "Saturday": "", "Sunday": ""}
-    dayname = ""
-    days_tasks = ""
-    days_found = set([])
-    for i in weekday_tasks_list:
-        if i in weekdays.keys():
-            if dayname:
-                weekdays[dayname] = days_tasks
-                days_tasks = ""
-            dayname = i
-            if dayname in days_found:
-                raise Exception("Duplicate day found on it's own line, in weekly tasks list.")
-            days_found.add(dayname)
+DAYNAMES = [
+    "Monday", "Tuesday", "Wednesday", "Thursday", 
+    "Friday", "Saturday", "Sunday"
+    ]
+
+def halt_on_missing_or_duplicate_days(days_and_tasks: list, daynames):
+    """ Raises error, halting script, if missing or duplicate days"""
+    days_found = set()
+    for i in days_and_tasks:
+        if i in daynames:
+            if i in days_found:
+                raise ValueError("Duplicate day found on it's own line, in weekly tasks list.")
+            days_found.add(i)
+    if len(days_found) < 7:
+        raise ValueError("A day is missing from weekly tasks list. Make sure each day appears on it's own line")
+
+def convert_to_dictionary(days_and_tasks_list, daynames: list):
+    """ Populates days_and_tasks_dict with tasks from days_and_tasks_list.
+        Ignores any text before first day heading.
+    """
+    days_and_tasks_dict = dict.fromkeys(daynames, "")
+    current_day = ""
+    for i in days_and_tasks_list:
+        if i in daynames:
+            current_day = i
         else:
-            days_tasks += i + "\n"
-    weekdays[dayname] = days_tasks.rstrip("\n")
-    if len(days_found) != 7:
-        raise Exception("A day is missing from weekly tasks list. Make sure each day appears on it's own line")
-    return weekdays
+            if current_day:
+                days_and_tasks_dict[current_day] += i + "\n"
+    return days_and_tasks_dict
 
 def make_nested_lists(single_list):
     return [i.split(", ", 2) for i in single_list]
@@ -138,10 +146,12 @@ if __name__ == "__main__":
     todays_date = datetime.date.today()    
     startday = "Monday"    
     tasks_by_date_location = "tasks_by_date.txt"
-    weekday_tasks_location = "monday_to_sunday_tasks.txt"
-    weekday_tasks = get_file_data(weekday_tasks_location)
-    weekday_tasks = strip_line_endings(weekday_tasks)
-    weekday_tasks = convert_to_dict(weekday_tasks)
+    weekly_tasks_location = "weekly_tasks.txt"
+    weekly_tasks = get_file_data(weekly_tasks_location)
+    weekly_tasks = strip_line_endings(weekly_tasks)
+    halt_on_missing_or_duplicate_days(weekly_tasks, DAYNAMES)
+    weekly_tasks = convert_to_dictionary(weekly_tasks, DAYNAMES)
+
     tasks_by_date = read_formatted_data(tasks_by_date_location)
     validate_format(tasks_by_date)
     days_to_startday = days_between_weekday(todays_date.weekday(),
@@ -157,7 +167,7 @@ if __name__ == "__main__":
         tasks_by_date, weeks_tasks = process_matching_dates(date_in_loop, 
                                                             tasks_by_date, 
                                                             weeks_tasks)                                                 
-        weeks_tasks.append(weekday_tasks.get(readable_date.split()[0])+'\n')
+        weeks_tasks.append(weekly_tasks.get(readable_date.split()[0])+'\n')
         
     output_location = "weeks_tasks.txt"
     create_output_file(output_location, weeks_tasks)
