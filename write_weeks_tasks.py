@@ -13,13 +13,8 @@ def get_file_data(location: str) -> list:
         return f.readlines()
 
 def strip_line_endings(data: list) -> list:
-    """Removes line endings(\n). Removes items only containing \n."""
+    """Removes line endings(\n). Removes item if only contains \n."""
     return [i.rstrip("\n") for i in data if i != "\n"]
-
-DAYNAMES = [
-    "Monday", "Tuesday", "Wednesday", "Thursday", 
-    "Friday", "Saturday", "Sunday"
-    ]
 
 def halt_on_missing_or_duplicate_days(days_and_tasks: list, daynames):
     """ Raises error, halting script, if missing or duplicate days"""
@@ -45,6 +40,18 @@ def convert_to_dictionary(days_and_tasks_list, daynames: list):
             if current_day:
                 days_and_tasks_dict[current_day] += i + "\n"
     return days_and_tasks_dict
+
+DAYNAMES = [
+    "Monday", "Tuesday", "Wednesday", "Thursday", 
+    "Friday", "Saturday", "Sunday"
+    ]
+
+def get_weekly_tasks_as_dictionary(location, daynames: list):
+    """Calls functions required to convert weekly_tasks to a dictionary"""
+    weekly_tasks = get_file_data(location)
+    weekly_tasks = strip_line_endings(weekly_tasks)
+    halt_on_missing_or_duplicate_days(weekly_tasks, DAYNAMES)
+    return convert_to_dictionary(weekly_tasks, DAYNAMES)
 
 def make_nested_lists(single_list):
     return [i.split(", ", 2) for i in single_list]
@@ -147,10 +154,7 @@ if __name__ == "__main__":
     startday = "Monday"    
     tasks_by_date_location = "tasks_by_date.txt"
     weekly_tasks_location = "weekly_tasks.txt"
-    weekly_tasks = get_file_data(weekly_tasks_location)
-    weekly_tasks = strip_line_endings(weekly_tasks)
-    halt_on_missing_or_duplicate_days(weekly_tasks, DAYNAMES)
-    weekly_tasks = convert_to_dictionary(weekly_tasks, DAYNAMES)
+    weekly_tasks = get_weekly_tasks_as_dictionary(weekly_tasks_location, DAYNAMES)
 
     tasks_by_date = read_formatted_data(tasks_by_date_location)
     validate_format(tasks_by_date)

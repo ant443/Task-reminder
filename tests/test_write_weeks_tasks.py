@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open
+
 import write_weeks_tasks as reminder
 
 class WriteWeeksTasksTest(unittest.TestCase):
@@ -25,6 +26,19 @@ class WriteWeeksTasksTest(unittest.TestCase):
         expected = ['multi\n', 'line\n', '\n', 'data\n']
         self.assertEqual(result, expected)
 
+    def test_strip_line_endings__removes_line_endings_and_paragraphs(self):
+        weekly_tasks = [
+            'some text\n', '\n', 'Monday\n', 'skiing\n', '\n', 'Tuesday\n',
+            '\n', 'Wednesday\n', '\n', 'Thursday\n', 'Friday\n', '\n', 
+            'Saturday\n', '\n', 'Sunday\n', 'snooker\n', 'bins out\n'
+            ]
+        expected = [
+            'some text', 'Monday', 'skiing', 'Tuesday', 'Wednesday',
+            'Thursday', 'Friday', 'Saturday', 'Sunday', 'snooker', 'bins out'
+            ]
+        result = reminder.strip_line_endings(weekly_tasks)
+        self.assertEqual(expected, result)
+
     def test_halt_on_missing_or_duplicate_days__missing(self):
         weekly_tasks = ["Monday", "skiing", "Sunday", "snooker", "bins out"]
         with self.assertRaises(ValueError):
@@ -48,13 +62,14 @@ class WriteWeeksTasksTest(unittest.TestCase):
 
     def test_convert_to_dictionary__returns_expected_with_text_before_first_day(self):
         weekly_tasks = [
-            "some text", "Monday", "skiing", "Tuesday", "Sunday", "Wednesday", "Thursday", 
+            "some text", "Monday", "skiing", "Tuesday", "Wednesday", "Thursday", 
             "Friday", "Saturday", "Sunday", "snooker", "bins out"
             ]
         expected = {
             'Monday': 'skiing\n', 'Tuesday': '', 'Wednesday': '',
             'Thursday': '', 'Friday': '', 'Saturday': '',
-            'Sunday': 'snooker\nbins out\n'}
+            'Sunday': 'snooker\nbins out\n'
+            }
         result = reminder.convert_to_dictionary(weekly_tasks, reminder.DAYNAMES)
         self.assertEqual(expected, result)
 
