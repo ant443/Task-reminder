@@ -17,3 +17,15 @@ class WriteWeeksTasksIntegrationTest(unittest.TestCase):
             'Sunday': 'snooker\nbins out\n'
             }
         self.assertEqual(result, expected)
+
+    def test_get_date_frequency_task_lists__returns_expected(self):
+        dated_tasks = 'Sep 18 2018, 4w, Example monthly task.\nOct 2 2018, ' \
+            '5d, Example task, written every 5 days.\n'
+        mocked_open = mock_open(read_data=dated_tasks)
+        with patch("builtins.open", mocked_open):
+            result = reminder.get_date_frequency_task_lists("filename")
+        expected = [
+            ['Sep 18 2018', '4w', 'Example monthly task.'], 
+            ['Oct 2 2018', '5d', 'Example task, written every 5 days.']
+            ]
+        self.assertEqual(result, expected)

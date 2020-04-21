@@ -1,2 +1,2 @@
 Sep 18 2018, 4w, Example monthly task. Add tasks in this format, use w for weeks, d for days.
-Oct 2 2018, 5d, Example task, written every 5 days
+Oct 2 2018, 5d, Example task, written every 5 days.

@@ -6,6 +6,8 @@ Created on Mon Jul 10 12:11:32 2017
 """
     
 import datetime
+import re
+import time
 
 def get_file_data(location: str) -> list:
     """Returns file data"""
@@ -53,31 +55,39 @@ def get_weekly_tasks_as_dictionary(location, daynames: list):
     halt_on_missing_or_duplicate_days(weekly_tasks, DAYNAMES)
     return convert_to_dictionary(weekly_tasks, DAYNAMES)
 
-def make_nested_lists(single_list):
-    return [i.split(", ", 2) for i in single_list]
+def split_twice_on_comma(date_frequency_task_strings: list) -> list:
+    """'date, frequency, task' strings become [date, frequency, task] lists"""
+    return [i.split(", ", 2) for i in date_frequency_task_strings]
     
-def read_formatted_data(location):
-    file_data = get_file_data(location)
-    file_data = strip_line_endings(file_data)
-    return make_nested_lists(file_data)
-
-def validate_three_items(item_list):
-    if len(item_list) != 3:
-        raise IndexError("Expected 3 items in each list")
+def validate_three_items(date_frequency_task: list):
+    """raises error if a list doesn't contain exactly 3 items"""
+    if len(date_frequency_task) != 3:
+        raise IndexError(f"Expected task_by_date format: date, frequency, " \
+            f"task on the same line. Problematic task: {date_frequency_task}")
     
-def validate_frequency(text):
-    import re
-    if re.fullmatch("[0-9]+[wd]", text) is None:
+def validate_frequency(frequency: str):
+    """raises ValueError if incorrect format for task frequency"""
+    if re.fullmatch("[0-9]+[wd]", frequency) is None:
         raise ValueError("Incorrect frequency format. "
                             "Expected digits then d or w. Example: 24w")
         
-def validate_format(tasks_by_date):
-    for inner_list in tasks_by_date:
+def validate_format(date_frequency_task_lists):
+    """Checks tasks by date where format in correct format"""
+    for inner_list in date_frequency_task_lists:
         validate_three_items(inner_list)
         validate_frequency(inner_list[1])
         
+def get_date_frequency_task_lists(location) -> list:
+    """Gets tasks by date and converts them to nested lists,
+        each with date, frequency, task items.
+    """
+    tasks_by_date = get_file_data(location)
+    tasks_by_date = strip_line_endings(tasks_by_date)
+    date_frequency_task_lists = split_twice_on_comma(tasks_by_date)
+    validate_format(date_frequency_task_lists)
+    return date_frequency_task_lists
+
 def convert_to_num(dayname):
-    import time
     return time.strptime(dayname, "%A").tm_wday
 
 def days_between_weekday(num1, num2):
@@ -155,9 +165,8 @@ if __name__ == "__main__":
     tasks_by_date_location = "tasks_by_date.txt"
     weekly_tasks_location = "weekly_tasks.txt"
     weekly_tasks = get_weekly_tasks_as_dictionary(weekly_tasks_location, DAYNAMES)
+    tasks_by_date = get_date_frequency_task_lists(tasks_by_date_location)
 
-    tasks_by_date = read_formatted_data(tasks_by_date_location)
-    validate_format(tasks_by_date)
     days_to_startday = days_between_weekday(todays_date.weekday(),
                                             convert_to_num(startday))
     weeks_tasks = []
