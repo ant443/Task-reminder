@@ -146,3 +146,36 @@ class WriteWeeksTasksTest(unittest.TestCase):
         except ValueError:
             self.fail("validate_frequency() raised " \
                 "ValueError unexpectedly!")
+
+    def test_get_day_num__monday(self):
+        dayname = "Monday"
+        expected = 0
+        result = reminder.get_day_num(dayname)
+        self.assertEqual(expected, result)
+
+    def test_get_day_num__saturday(self):
+        dayname = "Saturday"
+        expected = 5
+        result = reminder.get_day_num(dayname)
+        self.assertEqual(expected, result)
+
+    def test_get_num_days_between__next_week(self):
+        today = 6
+        start_day = 0
+        expected = 1
+        result = reminder.get_num_days_between(today, start_day)
+        self.assertEqual(expected, result)
+
+    def test_get_num_days_between__same_day(self):
+        today = 0
+        start_day = 0
+        expected = 0
+        result = reminder.get_num_days_between(today, start_day)
+        self.assertEqual(expected, result)
+
+    def test_get_num_days_between__later_in_week(self):
+        today = 2
+        start_day = 4
+        expected = 2
+        result = reminder.get_num_days_between(today, start_day)
+        self.assertEqual(expected, result)

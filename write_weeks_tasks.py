@@ -48,7 +48,7 @@ DAYNAMES = [
     "Friday", "Saturday", "Sunday"
     ]
 
-def get_weekly_tasks_as_dictionary(location, daynames: list):
+def get_weekly_tasks_dictionary(location, daynames: list):
     """Calls functions required to convert weekly_tasks to a dictionary"""
     weekly_tasks = get_file_data(location)
     weekly_tasks = strip_line_endings(weekly_tasks)
@@ -87,12 +87,14 @@ def get_date_frequency_task_lists(location) -> list:
     validate_format(date_frequency_task_lists)
     return date_frequency_task_lists
 
-def convert_to_num(dayname):
+def get_day_num(dayname) -> int:
+    """Converts dayname to 0 indexed number in week e.g Sunday -> 6"""
     return time.strptime(dayname, "%A").tm_wday
 
-def days_between_weekday(num1, num2):
-    oneweek = 7
-    return num2 - num1 if num1 <= num2 else num2+oneweek - num1
+def get_num_days_between(day1: int, day2: int) -> int:
+    """Return number of days between two days as their number in week"""
+    one_week = 7
+    return day2 - day1 if day1 <= day2 else day2+one_week - day1
 
 def make_list_and_format(date_obj):
     return date_obj.strftime('%A %d %b').split()
@@ -159,21 +161,22 @@ def create_output_file(location, weeks_tasks):
             f.write(i)
 
 if __name__ == "__main__":
-
-    todays_date = datetime.date.today()    
-    startday = "Monday"    
+    
     tasks_by_date_location = "tasks_by_date.txt"
     weekly_tasks_location = "weekly_tasks.txt"
-    weekly_tasks = get_weekly_tasks_as_dictionary(weekly_tasks_location, DAYNAMES)
+    weekly_tasks = get_weekly_tasks_dictionary(weekly_tasks_location, DAYNAMES)
     tasks_by_date = get_date_frequency_task_lists(tasks_by_date_location)
 
-    days_to_startday = days_between_weekday(todays_date.weekday(),
-                                            convert_to_num(startday))
+    start_day = "Monday"
+    start_day = get_day_num(start_day)
+    todays_date = datetime.date.today()
+    today = todays_date.weekday()
+    days_to_start_day = get_num_days_between(today, start_day)
     weeks_tasks = []
 
     # loop from startday to endday
     for i in range(7):
-        days_between = days_to_startday + i
+        days_between = days_to_start_day + i
         date_in_loop = get_future_date(todays_date, days_between)
         readable_date = make_readable(date_in_loop)
         weeks_tasks.append(readable_date + '\n')
