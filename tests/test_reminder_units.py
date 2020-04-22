@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open
+import datetime
 
 import write_weeks_tasks as reminder
 
@@ -178,4 +179,40 @@ class WriteWeeksTasksTest(unittest.TestCase):
         start_day = 4
         expected = 2
         result = reminder.get_num_days_between(today, start_day)
+        self.assertEqual(expected, result)
+
+    def test_get_future_date__zero_days(self):
+        date = datetime.date(2020, 2, 23)
+        days_to_target = 0
+        expected = datetime.date(2020, 2, 23)
+        result = reminder.get_future_date(date, days_to_target)
+        self.assertEqual(expected, result)
+
+    def test_get_future_date__five_days(self):
+        date = datetime.date(2020, 2, 23)
+        days_to_target = 5
+        expected = datetime.date(2020, 2, 28)
+        result = reminder.get_future_date(date, days_to_target)
+        self.assertEqual(expected, result)
+
+    def test_format_and_split__Wednesday(self):
+        date = datetime.date(2020, 1, 15)
+        expected = ["Wednesday", "15", "Jan"]
+        result = reminder.format_and_split(date)
+        self.assertEqual(expected, result)
+
+    def test_format_and_split__Thursday(self):
+        date = datetime.date(2020, 3, 19)
+        expected = ["Thursday", "19", "Mar"]
+        result = reminder.format_and_split(date)
+        self.assertEqual(expected, result)
+
+    def get_date_suffix_returns_expected(self):
+        result = [str(i) + reminder.get_date_suffix(i) for i in range(1,32)]
+        expected = [
+            '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th',
+            '10th', '11th', '12th', '13th', '14th', '15th', '16th', '17th',
+            '18th', '19th', '20th', '21st', '22nd', '23rd', '24th', '25th',
+            '26th', '27th', '28th', '29th', '30th', '31st'
+            ]
         self.assertEqual(expected, result)

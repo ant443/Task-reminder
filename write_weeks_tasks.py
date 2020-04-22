@@ -24,10 +24,12 @@ def halt_on_missing_or_duplicate_days(days_and_tasks: list, daynames):
     for i in days_and_tasks:
         if i in daynames:
             if i in days_found:
-                raise ValueError("Duplicate day found on it's own line, in weekly tasks list.")
+                raise ValueError("Duplicate day found on it's own line, in " \
+                    "weekly tasks list.")
             days_found.add(i)
     if len(days_found) < 7:
-        raise ValueError("A day is missing from weekly tasks list. Make sure each day appears on it's own line")
+        raise ValueError("A day is missing from weekly tasks list. Make sure" \
+            " each day appears on it's own line")
 
 def convert_to_dictionary(days_and_tasks_list, daynames: list):
     """ Populates days_and_tasks_dict with tasks from days_and_tasks_list.
@@ -96,20 +98,24 @@ def get_num_days_between(day1: int, day2: int) -> int:
     one_week = 7
     return day2 - day1 if day1 <= day2 else day2+one_week - day1
 
-def make_list_and_format(date_obj):
-    return date_obj.strftime('%A %d %b').split()
+def get_future_date(date: datetime.date, days_to_target: int) -> datetime.date:
+    """Adds a number of days to a date object, returning a new date object"""
+    return date + datetime.timedelta(days=days_to_target)
 
-def get_date_suffix(day_of_month):
-    return ('th' if 11<=day_of_month<=13 
-            else {1:'st',2:'nd',3:'rd'}.get(day_of_month%10, 'th'))
+def format_and_split(date: datetime.date) -> list:
+    """formats date into list items e.g. ["Wednesday", "15", "Jan"]"""
+    return date.strftime('%A %d %b').split()
 
-def make_readable(date_obj):
-    formatted_date = make_list_and_format(date_obj)
-    return (formatted_date[0] + ' ' + formatted_date[1].lstrip('0') +
-            get_date_suffix(date_obj.day) + ' ' + formatted_date[2])
-    
-def get_future_date(todays_date, days_to_target):
-    return todays_date + datetime.timedelta(days=days_to_target)
+def get_date_suffix(day_the_month: int) -> str:
+    """Returns the day number's suffix e.g. 22 -> 'nd'"""
+    return ('th' if 11<=day_the_month<=13 
+            else {1:'st',2:'nd',3:'rd'}.get(day_the_month%10, 'th'))
+
+def to_readable(date: datetime.date) -> str:
+    """Converts a date to something more readable e.g. Monday 3rd Jan"""
+    day_with_suffix = str(date.day) + get_date_suffix(date.day)
+    day_name, _, month_abbreviation = format_and_split(date)
+    return f"{day_name} {day_with_suffix} {month_abbreviation}"
 
 def process_matching_dates(date_in_loop, tasks_by_date, weeks_tasks):
     def missed_task_msg(date_indicated, days_old):
@@ -178,7 +184,7 @@ if __name__ == "__main__":
     for i in range(7):
         days_between = days_to_start_day + i
         date_in_loop = get_future_date(todays_date, days_between)
-        readable_date = make_readable(date_in_loop)
+        readable_date = to_readable(date_in_loop)
         weeks_tasks.append(readable_date + '\n')
         tasks_by_date, weeks_tasks = process_matching_dates(date_in_loop, 
                                                             tasks_by_date, 

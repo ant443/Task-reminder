@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open
+import datetime
 
 import write_weeks_tasks as reminder
 
@@ -29,3 +30,9 @@ class WriteWeeksTasksIntegrationTest(unittest.TestCase):
             ['Oct 2 2018', '5d', 'Example task, written every 5 days.']
             ]
         self.assertEqual(result, expected)
+
+    def test_to_readable__expected_output(self):
+        date = datetime.date(2019, 11, 3)
+        expected = "Sunday 3rd Nov"
+        result = reminder.to_readable(date)
+        self.assertEqual(expected, result)
