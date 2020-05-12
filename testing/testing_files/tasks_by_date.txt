@@ -1,6 +1,0 @@
-Sep 13 2018, 5d, test text1
-Sep 19 2018, 24w, test text 2
-Jan 01 2019, 365d, test text 3
-Dec 04 2018, 365d, test text 4
-Jul 20 2019, 365d, test text 5
-Jan 01 2021, 183w, test text 6
