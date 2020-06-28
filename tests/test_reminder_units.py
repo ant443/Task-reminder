@@ -334,15 +334,15 @@ class WriteWeeksTasksTest(unittest.TestCase):
         result = reminder.to_string(date)
         self.assertEqual(expected, result)
 
-    def test_replace_date__overdue_task_unittest(self):
+    def test_get_new_due_date__overdue_task_unittest(self):
         to_combined_timedelta = Mock(return_value=datetime.timedelta(28))
         to_string = Mock(return_value="Jun 24 2020")
-        date_frequency_task = ["Jun 3 2019", "4w", "Example task."]
+        frequency = "4w"
         target = datetime.date(2020, 5, 27)
-        expected = ["Jun 24 2020", "4w", "Example task."]
+        expected = "Jun 24 2020"
         with patch("reminder.to_combined_timedelta", to_combined_timedelta):
             with patch("reminder.to_string", to_string):
-                result = reminder.replace_date(date_frequency_task, target)
+                result = reminder.get_new_due_date(frequency, target)
         self.assertEqual(expected, result)
 
     def test_prepare_task_string__due_task(self):
@@ -366,11 +366,11 @@ class WriteWeeksTasksTest(unittest.TestCase):
 
     @patch("reminder.to_datetime_date")
     @patch("reminder.prepare_task_string")
-    @patch("reminder.replace_date")
-    def test_get_due_tasks_update_date__task_due_unittest(self, replace_date, prepare_task_string, to_datetime_date):
+    @patch("reminder.get_new_due_date")
+    def test_get_due_tasks_update_date__task_due_unittest(self, get_new_due_date, prepare_task_string, to_datetime_date):
         to_datetime_date.return_value = datetime.date(2018, 9, 18)
         prepare_task_string.return_value = "Example monthly task.\n"
-        replace_date.return_value = ["Oct 16 2018", "4w", "Example monthly task."]
+        get_new_due_date.return_value = "Oct 16 2018"
         target = datetime.date(2018, 9, 18)
         tasks_by_date = [["Sep 18 2018", "4w", "Example monthly task."]]
         result_task_by_date, result_weeks_tasks = reminder.get_due_tasks_update_date(target, tasks_by_date)

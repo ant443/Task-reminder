@@ -152,12 +152,9 @@ def to_string(date: datetime.date) -> str:
     """e.g. converts datetime.date(2020, 5, 6) to May 06 2020"""
     return date.strftime("%b %d %Y")
 
-def replace_date(date_frequency_task: list, target: datetime.date) -> list:
-    """Replaces date in index 0, with new date from adding target+frequency"""
-    new_due_date = target + to_combined_timedelta(date_frequency_task[1])
-    new_due_date = to_string(new_due_date)
-    date_frequency_task[0] = new_due_date
-    return date_frequency_task
+def get_new_due_date(frequency: str, base_date: datetime.date) -> list:
+    """Returns a new date from adding base_date+frequency"""
+    return to_string(base_date + to_combined_timedelta(frequency))
 
 def prepare_task_string(task: str, due_date: str, dt_due_date, target):
     """Add some new lines. Notify user if task was overdue."""
@@ -173,11 +170,11 @@ def get_due_tasks_update_date(target: datetime.date, tasks_by_date: list):
     tasks_due = ""
     updated_tasks_by_date = []
     for date_frequency_task in tasks_by_date:
-        due_date, _, task = date_frequency_task
+        due_date, frequency, task = date_frequency_task
         dt_due_date = to_datetime_date(due_date)
         if dt_due_date <= target:
             tasks_due += prepare_task_string(task, due_date, dt_due_date, target)
-            date_frequency_task = replace_date(date_frequency_task, target)
+            date_frequency_task[0] = get_new_due_date(frequency, target)
         updated_tasks_by_date.append(date_frequency_task)
     return updated_tasks_by_date, tasks_due
 

@@ -43,18 +43,18 @@ class WriteWeeksTasksIntegrationTest(unittest.TestCase):
         result = reminder.to_combined_timedelta(duration)
         self.assertEqual(expected, result)
 
-    def test_replace_date__overdue_task(self):
-        date_frequency_task = ["Jun 3 2019", "4w", "Example task."]
+    def test_get_new_due_date__overdue_task(self):
+        frequency = "4w"
         target = datetime.date(2020, 5, 27)
-        expected = ["Jun 24 2020", "4w", "Example task."]
-        result = reminder.replace_date(date_frequency_task, target)
+        expected = "Jun 24 2020"
+        result = reminder.get_new_due_date(frequency, target)
         self.assertEqual(expected, result)
 
-    def test_replace_date__due_task(self):
-        date_frequency_task = ["Apr 3 2020", "6d", "Example task."]
+    def test_get_new_due_date__due_task(self):
+        frequency = "6d"
         target = datetime.date(2020, 4, 3)
-        expected = ["Apr 09 2020", "6d", "Example task."]
-        result = reminder.replace_date(date_frequency_task, target)
+        expected = "Apr 09 2020"
+        result = reminder.get_new_due_date(frequency, target)
         self.assertEqual(expected, result)
 
     def test_get_due_tasks_update_date__task_overdue(self):
