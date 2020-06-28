@@ -124,6 +124,21 @@ def to_readable(date: datetime.date) -> str:
     day_name, _, month_abbreviation = format_and_split(date)
     return f"{day_name} {day_with_suffix} {month_abbreviation}"
 
+def text_is_list(text) -> bool:
+    """check if text is wrapped in square brackets"""
+    text = text.strip()
+    return text[0] == '[' and text[-1] == ']'
+
+def pop_and_rotate_text_list(text) -> tuple:
+    """Rotates once, a python list contained within a string
+        Returns rotated list in string form and the popped item.
+    """
+    pylist = text.strip().strip('[]').strip().strip(',').split(',')
+    pylist = [i.strip() for i in pylist]
+    first_item = pylist.pop(0)
+    pylist.append(first_item)
+    return f'[{", ".join(pylist)}]', first_item
+
 def to_datetime_date(date: str) -> datetime.date:
     """Example: converts 'Jan 23 2020' to datetime.date(2020, 1, 23)
        Will raise error, halting script, if wrong format.
@@ -173,6 +188,8 @@ def get_due_tasks_update_date(target: datetime.date, tasks_by_date: list):
         due_date, frequency, task = date_frequency_task
         dt_due_date = to_datetime_date(due_date)
         if dt_due_date <= target:
+            if text_is_list(task):
+                date_frequency_task[2], task = pop_and_rotate_text_list(task)
             tasks_due += prepare_task_string(task, due_date, dt_due_date, target)
             date_frequency_task[0] = get_new_due_date(frequency, target)
         updated_tasks_by_date.append(date_frequency_task)

@@ -263,6 +263,42 @@ class WriteWeeksTasksTest(unittest.TestCase):
             result = reminder.to_readable(date)
         self.assertEqual(expected, result)
 
+    def test_text_is_list__with_list(self):
+        is_list = " [once, two] "
+        expected = True
+        result = reminder.text_is_list(is_list)
+        self.assertEqual(expected, result)
+
+    def test_text_is_list__without_list(self):
+        isnt_list = " reminder to use [ ] more"
+        expected = False
+        result = reminder.text_is_list(isnt_list)
+        self.assertEqual(expected, result)
+
+    def test_pop_and_rotate_text_list__well_formed(self):
+        well_formed = "[one, two, three]"
+        expected = ('[two, three, one]', 'one')
+        result = reminder.pop_and_rotate_text_list(well_formed)
+        self.assertEqual(expected, result)
+
+    def test_pop_and_rotate_text_list__disjointed(self):
+        disjointed = "  [ one,  two,three  ] "
+        expected = ('[two, three, one]', 'one')
+        result = reminder.pop_and_rotate_text_list(disjointed)
+        self.assertEqual(expected, result)
+
+    def test_pop_and_rotate_text_list__one_item(self):
+        one_item = " [ one ] "
+        expected = ('[one]', 'one')
+        result = reminder.pop_and_rotate_text_list(one_item)
+        self.assertEqual(expected, result)
+
+    def test_pop_and_rotate_text_list__one_item_commas(self):
+        one_item_commas = " [ ,one, ] "
+        expected = ('[one]', 'one')
+        result = reminder.pop_and_rotate_text_list(one_item_commas)
+        self.assertEqual(expected, result)
+
     def test_to_timedelta__days(self):
         duration = "3d"
         expected = datetime.timedelta(3)

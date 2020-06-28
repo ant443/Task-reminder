@@ -95,12 +95,30 @@ class WriteWeeksTasksIntegrationTest(unittest.TestCase):
     def test_get_due_tasks_update_date__task_due(self):
         target = datetime.date(2018, 9, 18)
         tasks_by_date = [["Sep 18 2018", "4w", "Example monthly task."]]
-        result_task_by_date, result_weeks_tasks = reminder.get_due_tasks_update_date(target, tasks_by_date)
         expected_tasks_by_date = [["Oct 16 2018", "4w", "Example monthly task."]]
         expected_weeks_tasks = "Example monthly task.\n"
+        result_task_by_date, result_weeks_tasks = reminder.get_due_tasks_update_date(target, tasks_by_date)
         self.assertEqual(expected_tasks_by_date, result_task_by_date)
         self.assertEqual(expected_weeks_tasks, result_weeks_tasks)
 
+    def test_get_due_tasks_update_date__not_due_list_task(self):
+        target = datetime.date(2018, 8, 11)
+        tasks_by_date = [["Sep 18 2018", "4w", "[Example, monthly, task.]"]]
+        expected_tasks_by_date = [["Sep 18 2018", "4w", "[Example, monthly, task.]"]]
+        expected_weeks_tasks = ""
+        result_task_by_date, result_weeks_tasks = reminder.get_due_tasks_update_date(target, tasks_by_date)
+        self.assertEqual(expected_tasks_by_date, result_task_by_date)
+        self.assertEqual(expected_weeks_tasks, result_weeks_tasks)
+        
+    def test_get_due_tasks_update_date__due_list_task(self):
+        target = datetime.date(2018, 9, 18)
+        tasks_by_date = [["Sep 18 2018", "4w", "[Example, monthly, task.]"]]
+        expected_tasks_by_date = [["Oct 16 2018", "4w", "[monthly, task., Example]"]]
+        expected_weeks_tasks = "Example\n"
+        result_task_by_date, result_weeks_tasks = reminder.get_due_tasks_update_date(target, tasks_by_date)
+        self.assertEqual(expected_tasks_by_date, result_task_by_date)
+        self.assertEqual(expected_weeks_tasks, result_weeks_tasks)
+    
     def test_get_weeks_tasks_replace_due_task_dates__with_due_not_due_overdue_tasks(self):
         weekly_tasks = {
             "Monday": "Example Monday task\n", "Tuesday": "", "Wednesday": "", 
