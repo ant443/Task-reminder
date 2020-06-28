@@ -30,4 +30,5 @@ tests can be run using the command:
 ##### Notes:  
 Dated tasks separated by a full stop and a space will be placed on a new line for convenience.
 Dated tasks will be printed last for each day.
+An array of tasks may be given using square brackets and commas, e.g. [task1, task2, task3]. First task will be produced on due date, and placed at back of list.
 If downloading zip and using Windows Notepad: Due to github sending Linux based line endings, Notepad on Windows won't display the line endings, so all the text will appear on the same line. I recommend adding them yourself, or try a different editor such as notepad++.
